@@ -1,0 +1,221 @@
+# ⬡ BlackCat SMART v7.0
+
+> **Disk Health Analyzer — Cross-Platform Edition**  
+> Windows · macOS · Linux
+
+---
+
+## 🇹🇭 ภาษาไทย
+
+### 🎉 Release นี้มีอะไรใหม่
+
+**v7.0** เป็น release ใหญ่ที่เขียนใหม่ทั้งหมด (full rewrite) จาก v5.x โดยเน้น 3 เรื่องหลัก: รองรับ cross-platform, เพิ่มฟีเจอร์ PDF/Print และ clean code + security audit ก่อน release
+
+---
+
+### ✨ ฟีเจอร์ใหม่
+
+#### 📄 PDF Export & Print
+- ปุ่ม **💾 Save PDF** และ **🖨️ Print** โผล่หลัง scan เสร็จ
+- PDF หน้า 1: Health Score + Verdict + Alerts + ตาราง SMART attributes
+- PDF หน้า 2: Raw JSON จาก smartctl ครบทุก field
+- รองรับภาษาไทยใน PDF อัตโนมัติ (THSarabunNew → Tahoma → Arial → Segoe UI)
+- Theme สว่าง print-friendly — พื้นขาว/เทาอ่อน ตัดเส้นชัดเจน
+- Save dialog แบบ native ของ OS
+
+#### 🎯 Health Score Bar
+- แถบ progress bar แสดง score แบบ visual ใต้ตัวเลข
+- สีเปลี่ยนตาม score: 🟢 เขียว (≥85) / 🟡 เหลือง (≥60) / 🔴 แดง (<60)
+
+#### ⚠️ Alert Panel
+- ปรับใหม่ให้ข้อความ wrap และแสดงครบ ไม่ตัดออก
+- แยกสี error (❌🔥) กับ warning (⚠️) ชัดเจน
+- Scroll ได้เมื่อ alert เยอะ
+
+#### 🍎 macOS Support
+- รองรับ Apple Silicon (M1/M2/M3) และ Intel Mac
+- ขอสิทธิ์ผ่าน `osascript` — แสดง Touch ID / password dialog แทน sudo terminal
+- หา smartctl อัตโนมัติจาก Homebrew paths ทั้ง Intel (`/usr/local/bin`) และ Apple Silicon (`/opt/homebrew/bin`)
+- Build เป็น `.app` bundle และ `.dmg` installer ด้วย `build_mac.sh`
+
+---
+
+### 🔧 การปรับปรุง
+
+| ด้าน | รายละเอียด |
+|---|---|
+| Full Rewrite | เขียนใหม่ทั้งหมด ลดจาก 1,424 → 1,226 บรรทัด |
+| State Management | รวม `last_rows`, `last_summary` ฯลฯ เป็น `state` dict เดียว |
+| Error Handling | ทุก subprocess มี timeout + exception handling ครบ |
+| Flet Compat | รองรับ flet ทั้ง < 0.80 และ ≥ 0.80 อัตโนมัติ |
+| PDF Thai Font | register font ถูกวิธี (regular + bold แยก + registerFontFamily) |
+| Dead Code | ลบ `_pad_all`, `get_resource_path`, `body_style` ที่ไม่ได้ใช้ |
+
+---
+
+### 🔒 Security Audit ผ่านทุกข้อ
+
+- ✅ `shell=False` ทุก subprocess
+- ✅ User input ไม่ถูกส่งตรงไปยัง command
+- ✅ PowerShell injection: `disk_idx` validate `int` + `0–99` ก่อนเสมอ
+- ✅ smartctl ใช้เฉพาะ read-only flags (`--scan`, `-a`)
+- ✅ ไม่มี network access
+- ✅ ไม่มี registry access
+- ✅ Temp files ถูกลบใน `finally` block เสมอ
+- ✅ ไม่มี debug output ค้างอยู่ใน production
+
+---
+
+### 📋 Requirements
+
+```
+Python       >= 3.9
+flet         >= 0.9.0
+reportlab    >= 3.6        (สำหรับ PDF export)
+smartmontools              (ภายนอก — ดูวิธีติดตั้งด้านล่าง)
+```
+
+### 📥 ติดตั้ง
+
+```bash
+pip install flet reportlab
+```
+
+**Windows** — วาง `smartctl.exe` ในโฟลเดอร์เดียวกับโปรแกรม  
+**macOS** — `brew install smartmontools`  
+**Linux** — `sudo apt install smartmontools`
+
+---
+
+### 📦 ไฟล์ใน Release นี้
+
+| ไฟล์ | คำอธิบาย |
+|---|---|
+| `blackcat_SMART_DISK.py` | Source code หลัก |
+| `build.bat` | Windows build script → `.exe` |
+| `build_mac.sh` | macOS build script → `.app` + `.dmg` |
+| `README.md` | คู่มือ TH/EN |
+
+> **smartctl.exe ไม่รวมอยู่ใน release** — ดาวน์โหลดได้จาก [smartmontools.org](https://www.smartmontools.org/wiki/Download)
+
+---
+
+---
+
+## 🇬🇧 English
+
+### 🎉 What's New in v7.0
+
+**v7.0** is a complete rewrite from v5.x, focusing on three goals: cross-platform support, PDF/Print export, and a clean code + security audit pass before release.
+
+---
+
+### ✨ New Features
+
+#### 📄 PDF Export & Print
+- **💾 Save PDF** and **🖨️ Print** buttons appear after every scan
+- PDF Page 1: Health Score, verdict, alerts, full SMART attributes table
+- PDF Page 2: Complete raw JSON output from smartctl
+- Automatic Thai font detection (THSarabunNew → Tahoma → Arial → Segoe UI)
+- Print-friendly light theme — white/light-gray backgrounds, clear grid lines
+- Native OS save dialog
+
+#### 🎯 Health Score Bar
+- Visual progress bar below the score number
+- Color tracks the score: 🟢 Green (≥85) / 🟡 Amber (≥60) / 🔴 Red (<60)
+
+#### ⚠️ Alert Panel
+- Text now wraps correctly — no more truncated messages
+- Error (❌🔥) and warning (⚠️) items styled distinctly
+- Scrollable when many alerts are present
+
+#### 🍎 macOS Support
+- Apple Silicon (M1/M2/M3) and Intel Mac
+- Privilege escalation via `osascript` — shows Touch ID / password dialog (no terminal needed)
+- Automatic smartctl discovery for both Intel (`/usr/local/bin`) and Apple Silicon (`/opt/homebrew/bin`) Homebrew paths
+- `build_mac.sh` produces a signed `.app` bundle and `.dmg` installer
+
+---
+
+### 🔧 Improvements
+
+| Area | Details |
+|---|---|
+| Full Rewrite | Reduced from 1,424 → 1,226 lines |
+| State Management | Consolidated `last_rows`, `last_summary`, etc. into a single `state` dict |
+| Error Handling | Every subprocess has timeout + full exception handling |
+| Flet Compatibility | Auto-detects flet < 0.80 and ≥ 0.80 API differences |
+| PDF Thai Font | Correct font registration (regular + bold separate + registerFontFamily) |
+| Dead Code Removed | Removed unused `_pad_all`, `get_resource_path`, `body_style` |
+
+---
+
+### 🔒 Security Audit — All Clear
+
+- ✅ `shell=False` on every subprocess call
+- ✅ User input is never concatenated into shell commands
+- ✅ PowerShell injection prevented: `disk_idx` validated as `int` in range `0–99`
+- ✅ smartctl invoked with read-only flags only (`--scan`, `-a`)
+- ✅ No network access
+- ✅ No registry access
+- ✅ Temp files always cleaned up in `finally` blocks
+- ✅ No debug output left in production code
+
+---
+
+### 📋 Requirements
+
+```
+Python       >= 3.9
+flet         >= 0.9.0
+reportlab    >= 3.6        (required for PDF export)
+smartmontools              (external binary — see install below)
+```
+
+### 📥 Installation
+
+```bash
+pip install flet reportlab
+```
+
+**Windows** — place `smartctl.exe` in the same folder as the script  
+**macOS** — `brew install smartmontools`  
+**Linux** — `sudo apt install smartmontools`
+
+---
+
+### 📦 Release Assets
+
+| File | Description |
+|---|---|
+| `blackcat_SMART_DISK.py` | Main source code |
+| `build.bat` | Windows build script → `.exe` |
+| `build_mac.sh` | macOS build script → `.app` + `.dmg` |
+| `README.md` | Bilingual TH/EN documentation |
+
+> **`smartctl.exe` is not bundled** — download from [smartmontools.org](https://www.smartmontools.org/wiki/Download)
+
+---
+
+### 🐛 Known Limitations
+
+- macOS `.app` requires smartmontools installed on the target machine (not bundled in this release)
+- PDF export requires `pip install reportlab` separately
+- Linux has not been tested as extensively as Windows
+
+---
+
+### 📜 Changelog
+
+```
+v7.0  2025  Full rewrite — cross-platform, PDF export, security audit
+v6.1        macOS support, osascript privilege escalation
+v6.0        Cross-platform base (Windows + macOS + Linux)
+v5.1        Security audit, removed shell=True, input validation
+v5.0        Health Score system, NVMe + ATA support, dark UI
+```
+
+---
+
+**Full documentation:** see `README.md`  
+**Source:** `blackcat_SMART_DISK.py` — 1,226 lines, zero dependencies beyond `flet` and `reportlab`
