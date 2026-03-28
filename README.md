@@ -1,63 +1,43 @@
-# BlackCat SMART DISK
+# BlackCat SMART
 
-เครื่องมือตรวจสุขภาพ HDD / SSD บน Windows พร้อม UI แบบ real-time
-
----
-
-## เครื่องมือในชุดนี้
-
-### 1. BlackCat Disk Scanner (`disk_scan.py`)
-สแกน HDD/SSD ระดับ sector เพื่อตรวจหา bad sector
-
-### 2. BlackCat SMART Analyzer (`smart_viewer.py`)
-อ่านข้อมูล SMART ของ disk และแสดงผลสุขภาพ drive
+เครื่องมือตรวจสุขภาพ HDD / SSD บน Windows — คุยกับ hardware ตรงๆ ผ่าน Win32 IOCTL
 
 ---
 
-## Requirements
+## ภาษา C (หลัก) — `c/`
 
+เขียนใหม่ทั้งหมดในภาษา C / C++ ไม่พึ่ง Python หรือ smartctl.exe
+
+### Features
+- อ่าน ATA SMART attributes โดยตรงผ่าน `IOCTL_ATA_PASS_THROUGH`
+- อ่าน NVMe Health Log ผ่าน `StorageDeviceProtocolSpecificProperty`
+- แสดง drive letters ของแต่ละ physical disk
+- คำนวณ Health Score 0–100 พร้อม verdict
+- GUI dark theme — Dear ImGui + DirectX 11
+- Export PDF report พร้อม save dialog
+- รองรับ 2 ภาษา EN / TH (สลับได้ real-time)
+- พกใส่ flash drive ได้ — single exe ไม่ต้องติดตั้ง
+
+### Requirements
 - Windows (Administrator required)
-- Python 3.10+
-- Flet >= 0.80
+- MSVC (Visual Studio Build Tools)
+- Dear ImGui (วางไว้ใน `c/imgui/`)
 
-```bash
-pip install flet reportlab
-```
-
-> SMART Analyzer ต้องการ `smartctl.exe` (รวมอยู่ในโปรเจกต์แล้ว)
-
----
-
-## Run
-
-```bash
-# Disk Scanner
-python disk_scan.py
-
-# SMART Analyzer
-python smart_viewer.py
-```
-
----
-
-## Build EXE
+### Build
 
 ```bat
-# Disk Scanner
-build_scanner.bat
-
-# SMART Analyzer
-build_smart.bat
+cd c
+build.bat
 ```
+
+ได้ `blackcat_smart.exe`
 
 ---
 
-## Changelog
+## ภาษา Python (ความทรงจำ) — `python/`
 
-### v1.0.0
-- Initial release — รวม Disk Scanner + SMART Analyzer ใน repo เดียว
-- Disk Scanner: sector-level read scan, bad sector detection, PDF report, EN/TH language
-- SMART Analyzer: SMART data reader, disk health scoring, temperature monitoring
+เวอร์ชันแรกที่ใช้ Python + Flet + smartctl.exe
+เก็บไว้เป็น reference — ไม่ได้ maintain แล้ว
 
 ---
 
