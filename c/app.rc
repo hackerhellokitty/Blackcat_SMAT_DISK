@@ -1,0 +1,4 @@
+// app.rc — application icon resource
+#include <windows.h>
+
+IDI_APPICON ICON "..\assets\ssd.ico"
